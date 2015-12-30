@@ -11,12 +11,13 @@
 #include <kern/env.h>
 #include <kern/trap.h>
 
+/*
 int sub(int i){
-	//cprintf("I am in the sub function\n %d ", 1/(1 - i));
+	cprintf("I am in the sub function\n %d ", 1/(1 - i));
 	return 1;
 	
 }
-
+*/
 void
 i386_init(void)
 {
@@ -40,7 +41,7 @@ i386_init(void)
 	// Lab 3 user environment initialization functions
 	env_init();
 	trap_init();
-	sub(1);
+	//sub(1);
 #if defined(TEST)
 	// Don't touch -- used by grading script!
 	ENV_CREATE(TEST, ENV_TYPE_USER);

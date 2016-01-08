@@ -21,6 +21,7 @@ sys_cputs(const char *s, size_t len)
 	// Destroy the environment if not.
 
 	// LAB 3: Your code here.
+	/*
 	int i ;
 	for(i = 0; i < len; i += PGSIZE){
 		pte_t *ptep = pgdir_walk(curenv->env_pgdir, (void *) (s + i), false);
@@ -29,7 +30,8 @@ sys_cputs(const char *s, size_t len)
 			env_destroy(curenv);
 		}
 
-	}
+	}*/
+	user_mem_assert(curenv, (void *) s, len, PTE_U);
 	// Print the string supplied by the user.
 	cprintf("%.*s", len, s);
 	return ;
@@ -79,7 +81,7 @@ syscall(uint32_t syscallno, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, 
 	// Return any appropriate return value.
 	// LAB 3: Your code here.
 	int sys_r = 0;
-	panic("syscall not implemented");
+	//panic("syscall not implemented");
 
 	switch (syscallno) {
 

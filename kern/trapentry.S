@@ -103,10 +103,10 @@ TRAPHANDLER(	 i_pgflt,	T_PGFLT)
 TRAPHANDLER(	 i_res,		T_RES)		
 TRAPHANDLER(	 i_fperr,	T_FPERR)		
 TRAPHANDLER(	 i_align,	T_ALIGN)
-TRAPHANDLER_NOEC(i_mchk,	T_MCHK)		
-TRAPHANDLER_NOEC(i_simderr, T_SIMDERR)
-TRAPHANDLER(	 i_syscall, T_SYSCALL)		
-TRAPHANDLER(	 i_default, T_DEFAULT)		
+TRAPHANDLER(	 i_mchk,	T_MCHK)		
+TRAPHANDLER(	 i_simderr, T_SIMDERR)
+TRAPHANDLER_NOEC(i_syscall, T_SYSCALL)		
+TRAPHANDLER_NOEC(i_default, T_DEFAULT)		
 
 /*
  * Lab 3: Your code here for _alltraps

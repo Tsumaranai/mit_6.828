@@ -214,6 +214,7 @@ trap_dispatch(struct Trapframe *tf)
 	// Handle processor exceptions.
 	// LAB 3: Your code here.
 	
+	print_trapframe(tf);
 	if(tf->tf_trapno == T_PGFLT)
 	  page_fault_handler(tf);
 	if(tf->tf_trapno == T_BRKPT)
@@ -237,7 +238,6 @@ trap_dispatch(struct Trapframe *tf)
 	}
 	// Unexpected trap: The user process or the kernel has a bug.
 	
-	print_trapframe(tf);
 	if (tf->tf_cs == GD_KT)
 		panic("unhandled trap in kernel");
 	else {
@@ -294,7 +294,8 @@ page_fault_handler(struct Trapframe *tf)
 	fault_va = rcr2();
 
 	// Handle kernel-mode page faults.
-
+	if((tf->tf_cs & 3) == 0)
+	  panic("kernel-mode page faults\n");
 	// LAB 3: Your code here.
 	
 	// We've already handled kernel-mode exceptions, so if we get here,

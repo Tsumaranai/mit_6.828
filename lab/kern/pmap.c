@@ -187,7 +187,7 @@ mem_init(void)
 	//    - the new image at UENVS  -- kernel R, user R
 	//    - envs itself -- kernel RW, user NONE
 	// LAB 3: Your code here.
-	
+	//boot_map_region(kern_pgdir, UPAGES, ROUNDUP(page_size, PGSIZE), PADDR(pages), PTE_U);
 	//envs = (struct Env *)boot_alloc( NENV * sizeof(struct Env) );
 	boot_map_region(kern_pgdir, UENVS, ROUNDUP((NENV * sizeof(struct Env)), PGSIZE) , PADDR(envs), PTE_W|PTE_U);
 	//////////////////////////////////////////////////////////////////////
@@ -210,7 +210,8 @@ mem_init(void)
 	// we just set up the mapping anyway.
 	// Permissions: kernel RW, user NONE
 	// Your code goes here:
-
+	boot_map_region(kern_pgdir, KERNBASE, ROUNDUP((0xffffffff - KERNBASE + 1), PGSIZE), 0,PTE_W);
+	
 	// Initialize the SMP-related parts of the memory map
 	mem_init_mp();
 
@@ -262,6 +263,13 @@ mem_init_mp(void)
 	//     Permissions: kernel RW, user NONE
 	//
 	// LAB 4: Your code here:
+	int i;
+
+	for(i = 0; i < NCPU; i++){
+
+		uintptr_t kstacktop_i = KSTACKTOP - i*(KSTKSIZE + KSTKGAP);
+		boot_map_region(kern_pgdir, kstacktop_i - KSTKSIZE, KSTKSIZE , PADDR(percpu_kstacks[i]), PTE_W);
+	}
 
 }
 
@@ -305,11 +313,12 @@ page_init(void)
 	size_t i;
 	size_t low_pm = PGNUM(IOPHYSMEM);
 	size_t up_pm  = PGNUM( PADDR(boot_alloc(0)) );
+	size_t entry_pm = PGNUM(MPENTRY_PADDR);		//MPENTRY_PADDR = 0x7000
 
 	for (i = 0; i < npages; i++) {
 		pages[i].pp_ref = 0;
-		
-		if( i == 0 || (i >= low_pm && i<= up_pm) ){
+	
+		if( i == 0 || (i >= low_pm && i<= up_pm) || i == entry_pm){
 
 			pages[i].pp_ref = 1;
 			continue;
@@ -614,7 +623,17 @@ mmio_map_region(physaddr_t pa, size_t size)
 	// Hint: The staff solution uses boot_map_region.
 	//
 	// Your code here:
-	panic("mmio_map_region not implemented");
+	size = ROUNDUP(size, PGSIZE);
+	if(base + size > MMIOLIM){
+
+		panic("mmio_map_region: beyond the MMIOLIM\n");
+	}
+	boot_map_region(kern_pgdir, base, size, pa, (PTE_PCD| PTE_PWT| PTE_W));
+
+	//panic("mmio_map_region not implemented");
+	void * p = (void *) base;
+	base += size;
+	return p;
 }
 
 static uintptr_t user_mem_check_addr;
